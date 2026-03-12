@@ -1,3 +1,4 @@
+import 'dotenv/config'; // Carrega .env antes de tudo — deve ser a primeira linha
 import express from 'express';
 import cors from 'cors';
 import routes from './routes/index.js'; // Importa as rotas (e não o controller direto)
