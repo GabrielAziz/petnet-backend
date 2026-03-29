@@ -8,8 +8,8 @@ export const COOKIE_MAX_AGE = 24 * 60 * 60 * 1000;
  * - sameSite: protege contra CSRF
  */
 export const cookieOptions = {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'none',
-    maxAge: COOKIE_MAX_AGE,
+  httpOnly: true,
+  secure: false,       // desativa secure temporariamente para localhost(Somente para teste, não vai para main)
+  sameSite: 'lax',     // permite envio do cookie cross-site em dev
+  maxAge: COOKIE_MAX_AGE,
 };
