@@ -10,7 +10,7 @@ NC='\033[0m'
 # ---- Config ----
 COMPOSE_FILE="docker-compose.prod.yml"
 ENV_FILE=".env.prod"
-APP_DIR="/app/petnet"
+APP_DIR="$(dirname "$0")"
 
 # ---- Validação ----
 cd $APP_DIR
