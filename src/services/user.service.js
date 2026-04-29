@@ -2,6 +2,8 @@ import bcrypt from 'bcrypt';
 import { base64ToBuffer, bufferToBase64 } from "../utils/image.utils.js";
 import { sanitizeData } from "../middlewares/utils.middleware.js";
 import { ResponseError } from "../errors/ResponseError.js";
+import { validateAndConvertEnums, translateEnums } from "../utils/enum.utils.js";
+import { UserEnums } from "../enums/user.enums.js";
 import {
     listUsers,
     findUserByCpf,
@@ -21,7 +23,7 @@ export const listUsersService = async () => {
             user.userPicture = bufferToBase64(user.picture_blob);
             delete user.picture_blob;
         }
-        return user;
+        return translateEnums(user, UserEnums);
     });
 }
 
@@ -42,7 +44,7 @@ export const showUserService = async (userCPF) => {
         delete user.picture_blob;
     }
 
-    return user;
+    return translateEnums(user, UserEnums);
 }
 
 export const createUserService = async (fullData) => {
@@ -80,10 +82,14 @@ export const createUserService = async (fullData) => {
         throw new ResponseError("E-mail já cadastrado no sistema.", 409);
     }
 
+    // Validação e Conversão de Enum
+    validateAndConvertEnums(userData, UserEnums);
+
     // Hash da senha
     userData.password = await bcrypt.hash(userData.password, 10);
 
-    return await createUser(userData, addressData, contactData);
+    const newUser = await createUser(userData, addressData, contactData);
+    return translateEnums(newUser, UserEnums);
 }
 
 export const updateUserService = async (userCPF, fullData) => {
@@ -113,6 +119,9 @@ export const updateUserService = async (userCPF, fullData) => {
         throw new ResponseError("Estrutura de dados inválida para atualização.", 400);
     }
 
+    // Validação e Conversão de Enum
+    validateAndConvertEnums(userData, UserEnums);
+
     const userExists = await findUserByCpf(cleanCpf);
     if (!userExists) {
         throw new ResponseError("Usuário não cadastrado no sistema.", 404);
@@ -131,7 +140,8 @@ export const updateUserService = async (userCPF, fullData) => {
         userData.password = await bcrypt.hash(userData.password, 10);
     }
 
-    return await updateUser(cleanCpf, userData, addressData, contactData);
+    const updatedUser = await updateUser(cleanCpf, userData, addressData, contactData);
+    return translateEnums(updatedUser, UserEnums);
 }
 
 export const deleteUserService = async (userCPF) => {

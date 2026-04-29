@@ -5,6 +5,8 @@ import { findUserByCpf, findUserByEmail, createUser } from '../repository/user.r
 import { sanitizeData } from '../middlewares/utils.middleware.js';
 import { validatePassword } from '../utils/validators.utils.js';
 import { ResponseError } from '../errors/ResponseError.js';
+import { validateAndConvertEnums, translateEnums } from '../utils/enum.utils.js';
+import { UserEnums } from '../enums/user.enums.js';
 
 /**
  * Registra um novo usuário e retorna o token JWT.
@@ -42,6 +44,9 @@ export const registerService = async (fullData) => {
     const emailExists = await findUserByEmail(userData.email);
     if (emailExists) throw new ResponseError('E-mail já cadastrado no sistema.', 409);
 
+    // Validação e Conversão de Enum
+    validateAndConvertEnums(userData, UserEnums);
+
     userData.password = await bcrypt.hash(userData.password, 10);
 
     // Cria o usuário sem endereço/contato — podem ser adicionados depois via /users
@@ -58,7 +63,7 @@ export const registerService = async (fullData) => {
     }
 
     const token = generateToken({ cpf: newUser.cpf, type: newUser.type });
-    return { token, returnUser };
+    return { token, user: translateEnums(returnUser, UserEnums) };
 };
 
 /**
@@ -80,5 +85,5 @@ export const loginService = async (email, password) => {
     if (!passwordMatch) throw new ResponseError('Credenciais inválidas.', 401);
 
     const token = generateToken({ cpf: user.cpf, type: user.type });
-    return { token, user: { cpf: user.cpf, name: user.name, type: user.type } };
+    return { token, user: translateEnums({ cpf: user.cpf, name: user.name, type: user.type }, UserEnums) };
 };
