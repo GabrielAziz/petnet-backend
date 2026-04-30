@@ -35,6 +35,8 @@ services:
       dockerfile: Dockerfile.prod
     container_name: petnet-api-prod
     restart: unless-stopped
+    ports:
+      - "3000:3000"        # ← Traefik acessa via host network
     environment:
       DATABASE_URL: "mysql://${DB_USER}:${DB_PASSWORD}@db:3306/${DB_NAME}"
       PORT: 3000
@@ -50,9 +52,9 @@ services:
       - "traefik.http.routers.petnet-api.entrypoints=websecure"
       - "traefik.http.routers.petnet-api.tls.certresolver=letsencrypt"
       - "traefik.http.services.petnet-api.loadbalancer.server.port=3000"
+      - "traefik.http.services.petnet-api.loadbalancer.server.url=http://localhost:3000" # ← adiciona essa
     networks:
       - internal
-      - traefik-network
 
 volumes:
   db_data_prod:
@@ -60,5 +62,3 @@ volumes:
 networks:
   internal:
     driver: bridge
-  traefik-network:
-    external: true
