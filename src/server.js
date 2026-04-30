@@ -13,8 +13,8 @@ const allowedOrigins = {
   development: ['http://localhost:5173'],
   production: [
     'https://petnet-pi.netlify.app',
-    'https://petnet.com.br',
-    'https://www.petnet.com.br',
+    'https://netcao.com.br',
+    'https://www.netcao.com.br',
   ]
 }
 
