@@ -23,6 +23,8 @@ Este diretório contém a coleção oficial do Postman para a API PetNet e este 
 | **Registro de Cliente** | `POST /api/auth/register` | Criar nova conta de cliente | Usuário criado (201) e cookie definido. |
 | **Login com Sucesso** | `POST /api/auth/login` | Acessar o sistema | Mensagem de sucesso (200) e dados do usuário. |
 | **Login Inválido** | `POST /api/auth/login` | Tentar login com senha errada | Erro de credenciais (401). |
+| **Usuário Atual (Me)** | `GET /api/auth/me` | Obter os dados do usuário da sessão atual | Dados do usuário — `{ cpf, name, type }` (200). |
+| **Usuário Atual sem Sessão** | `GET /api/auth/me` | Chamar sem cookie de sessão válido | Erro de autenticação (401). |
 | **Logout** | `POST /api/auth/logout` | Encerrar sessão | Sessão encerrada e cookie limpo (200). |
 
 ### 2. Fluxo de Recuperação de Senha

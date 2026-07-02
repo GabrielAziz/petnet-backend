@@ -88,3 +88,20 @@ export const loginService = async (email, password) => {
     await sendLog({ entity: 'auth', action: 'login', status: 'success', responsible: user.cpf });
     return { token, user: translateEnums({ cpf: user.cpf, name: user.name, type: user.type }, UserEnums) };
 };
+
+/**
+ * Retorna os dados do usuário autenticado, identificado exclusivamente pelo
+ * CPF já validado no token JWT (nenhum input do cliente é aceito aqui).
+ *
+ * @param {string} cpf - CPF extraído de req.user pelo middleware ensureAuthenticated
+ * @returns {{ cpf: string, name: string, type: string }}
+ */
+export const meService = async (cpf) => {
+    const user = await findUserByCpf(cpf);
+
+    if (!user) {
+        throw new ResponseError('Sessão inválida.', 401);
+    }
+
+    return translateEnums({ cpf: user.cpf, name: user.name, type: user.type }, UserEnums);
+};

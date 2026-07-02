@@ -1,5 +1,5 @@
 import { jest, describe, it, expect, beforeEach } from '@jest/globals';
-import { registerController, loginController, logoutController } from './auth.controller.js';
+import { registerController, loginController, logoutController, meController } from './auth.controller.js';
 import * as authService from '../services/auth.service.js';
 import * as cookieUtils from '../utils/cookie.utils.js';
 import { ResponseError } from '../errors/ResponseError.js';
@@ -78,6 +78,20 @@ describe('Auth Controller (auth.controller.js)', () => {
       expect(res.clearCookie).toHaveBeenCalledWith('token', { httpOnly: true, sameSite: 'strict' });
       expect(res.status).toHaveBeenCalledWith(200);
       expect(res.json).toHaveBeenCalledWith({ message: 'Logout realizado com sucesso.' });
+    });
+  });
+
+  describe('meController', () => {
+    it('deve retornar 200 com os dados do usuário identificado pelo cookie de sessão', async () => {
+      req.user = { cpf: TEST_CPF_1, type: 'CUSTOMER' };
+      const mockUser = { cpf: TEST_CPF_1, name: 'João', type: 'Cliente' };
+      authService.meService.mockResolvedValue(mockUser);
+
+      await meController(req, res);
+
+      expect(authService.meService).toHaveBeenCalledWith(TEST_CPF_1);
+      expect(res.status).toHaveBeenCalledWith(200);
+      expect(res.json).toHaveBeenCalledWith({ user: mockUser });
     });
   });
 });

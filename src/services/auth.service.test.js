@@ -1,5 +1,5 @@
 import { jest, describe, it, expect, beforeEach, afterAll } from '@jest/globals';
-import { registerService, loginService } from './auth.service.js';
+import { registerService, loginService, meService } from './auth.service.js';
 import * as userRepository from '../repository/user.repository.js';
 import * as authRepository from '../repository/auth.repository.js';
 import * as jwtUtils from '../utils/jwt.utils.js';
@@ -76,6 +76,27 @@ describe('Auth Service (auth.service.js)', () => {
       authRepository.findUserByEmailForAuth.mockResolvedValue({ password: 'hashed' });
       bcrypt.compare.mockResolvedValue(false);
       await expect(loginService('x@x.com', TEST_CPF_1)).rejects.toThrow('Credenciais inválidas.');
+    });
+  });
+
+  describe('meService', () => {
+    it('deve retornar cpf, name e type do usuário identificado pelo token', async () => {
+      userRepository.findUserByCpf.mockResolvedValue({
+        cpf: TEST_CPF_1,
+        name: 'João',
+        type: 'CUSTOMER',
+        email: 'j@j.com',
+      });
+
+      const result = await meService(TEST_CPF_1);
+
+      expect(userRepository.findUserByCpf).toHaveBeenCalledWith(TEST_CPF_1);
+      expect(result).toEqual({ cpf: TEST_CPF_1, name: 'João', type: 'Cliente', type_code: 'CUSTOMER' });
+    });
+
+    it('deve lançar erro 401 se o usuário do token não existir mais (ex: excluído)', async () => {
+      userRepository.findUserByCpf.mockResolvedValue(null);
+      await expect(meService(TEST_CPF_1)).rejects.toThrow('Sessão inválida.');
     });
   });
 });

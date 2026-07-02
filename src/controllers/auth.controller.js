@@ -1,4 +1,4 @@
-import { registerService, loginService } from '../services/auth.service.js';
+import { registerService, loginService, meService } from '../services/auth.service.js';
 import { cookieOptions } from '../utils/cookie.utils.js';
 import { requireFields, validateEmail } from '../utils/validators.utils.js';
 
@@ -20,6 +20,11 @@ export const loginController = async (req, res) => {
 
     res.cookie('token', token, cookieOptions);
     return res.status(200).json({ message: 'Login realizado com sucesso.', user });
+};
+
+export const meController = async (req, res) => {
+    const user = await meService(req.user.cpf);
+    return res.status(200).json({ user });
 };
 
 export const logoutController = (req, res) => {

@@ -160,6 +160,38 @@
           "response": []
         },
         {
+          "name": "Get Current User (Me)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status 200 - Sessão válida\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Retorna cpf, name e type do usuário logado\", () => {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json).to.have.property(\"user\");",
+                  "    pm.expect(json.user).to.have.property(\"cpf\");",
+                  "    pm.expect(json.user).to.have.property(\"name\");",
+                  "    pm.expect(json.user).to.have.property(\"type\");",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "me"]
+            },
+            "description": "Retorna os dados do usuário da sessão atual (cpf, name, type), lidos exclusivamente do cookie JWT. Requer autenticação (`ensureAuthenticated`). Retorna 401 se o cookie estiver ausente, inválido ou expirado."
+          },
+          "response": []
+        },
+        {
           "name": "Logout",
           "event": [
             {
